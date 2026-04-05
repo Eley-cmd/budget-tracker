@@ -1102,3 +1102,86 @@
         min-width: 70px !important;
     }
 }
+
+/* ─── THE BALANCED 375px & REDMI FIX (v2) ─── */
+@media (max-width: 380px) {
+
+    /* 1. Main Container - 20px is the magic number for "Gutter" */
+    .dash-container {
+        padding: 0 20px !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Header - Pantayin sa cards */
+    .dash-header {
+        padding: 0 4px !important;
+        /* Konting offset para align sa chart borders */
+        margin-bottom: 24px !important;
+    }
+
+    .dash-title {
+        font-size: 24px !important;
+        letter-spacing: -0.5px;
+    }
+
+    /* 3. Charts Row - Column Stack */
+    .charts-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+        /* Mas malaking gap sa pagitan ng cards */
+        width: 100% !important;
+    }
+
+    .chart-card {
+        width: 100% !important;
+        /* Padding sa loob: 20px top/bottom, 15px sides */
+        padding: 20px 15px !important;
+        box-sizing: border-box !important;
+        border-radius: 16px !important;
+        /* Mas bilugan para sa modern mobile look */
+        margin-bottom: 0 !important;
+    }
+
+    /* 4. Canvas Wrapper - Breathing room for labels */
+    .chart-wrap,
+    .donut-wrap {
+        width: 100% !important;
+        height: 200px !important;
+        /* Mas mataas para hindi dikit ang labels sa x-axis */
+        position: relative !important;
+        margin-top: 10px;
+    }
+
+    /* 5. Donut Legend - 2 Columns with gap */
+    .donut-legend {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        margin-top: 18px !important;
+        padding: 0 5px !important;
+    }
+
+    /* 6. Summary Grid */
+    .summary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    .summary-card {
+        padding: 20px !important;
+    }
+
+    /* 7. Transactions - Full Width alignment */
+    .tx-list {
+        padding: 0 !important;
+    }
+
+    .tx-item {
+        padding: 16px 14px !important;
+        margin-bottom: 10px !important;
+        border-radius: 12px !important;
+    }
+}

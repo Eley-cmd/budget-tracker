@@ -160,19 +160,32 @@ function renderDonutChart(transactions) {
         }]
     };
 
+    // Sa loob ng renderBarChart at renderDonutChart, siguraduhin na ganito ang options:
     const options = {
         responsive: true,
-        maintainAspectRatio: false,
-        cutout: '68%',
+        maintainAspectRatio: false, // MANDATORY: Para sumunod sa CSS height
+        resizeDelay: 200, // Allowance para sa browser bago mag-resize
         plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: c => ` ${c.label}: ₱${c.parsed.toFixed(2)} (${((c.parsed / total) * 100).toFixed(1)}%)`
-                }
+            legend: {
+                display: window.innerWidth > 350, // Itago ang legend kung sobrang sikip (350px below)
+                position: 'bottom', // Mas safe ang bottom sa mobile
             }
         }
     };
+
+    //   const options = {
+    //  responsive: true,
+    //  maintainAspectRatio: false,
+    //  cutout: '68%',
+    // plugins: {
+    //  legend: { display: false },
+    //    tooltip: {
+    //  callbacks: {
+    //    label: c => ` ${c.label}: ₱${c.parsed.toFixed(2)} (${((c.parsed / total) * 100).toFixed(1)}%)`
+    //}
+    //}
+    //}
+    // };
 
     if (donutChartInstance) {
         donutChartInstance.data = chartData;
@@ -183,7 +196,7 @@ function renderDonutChart(transactions) {
     }
 
     if (legend) {
-        const maxItems = window.innerWidth < 350 ? 4 : 6; // 4 items lang kung maliit ang screen
+        const maxItems = window.innerWidth < 375 ? 4 : 6; // 4 items lang kung maliit ang screen
         legend.innerHTML = labels.slice(0, maxItems).map((label, i) => `
         <div class="legend-item">
         <div class="legend-dot-label">
