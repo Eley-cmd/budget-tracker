@@ -195,7 +195,7 @@ function renderDonutChart(transactions) {
     }
 }
 
-// ─── Public: update both charts ───────────────────────────────
+// Public: update both charts
 function updateCharts(transactions, months) {
     renderBarChart(transactions, months || 6);
     renderDonutChart(transactions);
