@@ -183,8 +183,9 @@ function renderDonutChart(transactions) {
     }
 
     if (legend) {
-        legend.innerHTML = labels.slice(0, 6).map((label, i) => `
-      <div class="legend-item">
+        const maxItems = window.innerWidth < 350 ? 4 : 6; // 4 items lang kung maliit ang screen
+        legend.innerHTML = labels.slice(0, maxItems).map((label, i) => `
+        <div class="legend-item">
         <div class="legend-dot-label">
           <span class="legend-dot" style="background:${colors[i]}"></span>
           <span>${label}</span>
