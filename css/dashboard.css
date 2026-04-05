@@ -1030,3 +1030,112 @@
         font-size: 0.9rem;
     }
 }
+
+/* ─── ULTRA MOBILE RESPONSIVE (330px) ─── */
+@media (max-width: 330px) {
+
+    /* 1. Container & Main Padding */
+    .dash-container {
+        padding: 0 12px;
+    }
+
+    .dash-main {
+        padding: 20px 0 60px;
+    }
+
+    /* 2. Header Adjustments */
+    .dash-title {
+        font-size: 20px;
+    }
+
+    .dash-subtitle {
+        font-size: 12px;
+    }
+
+    /* 3. Summary Cards (Force Single Column) */
+    .summary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .summary-card {
+        padding: 16px;
+    }
+
+    .summary-value {
+        font-size: 20px;
+    }
+
+    /* 4. Charts Section */
+    .chart-card {
+        padding: 16px;
+    }
+
+    .chart-wrap {
+        height: 180px;
+        /* Mas maikli para kasya sa screen */
+    }
+
+    /* 5. Transactions List (The trickiest part) */
+    .tx-item {
+        flex-direction: column;
+        /* I-stack ang info at amount */
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .tx-right {
+        width: 100%;
+        flex-direction: row;
+        /* Itabi ang amount sa actions */
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--border);
+        padding-top: 8px;
+        margin-top: 4px;
+    }
+
+    .tx-left {
+        width: 100%;
+    }
+
+    .tx-amount {
+        text-align: left;
+        min-width: unset;
+        font-size: 14px;
+    }
+
+    .tx-actions {
+        opacity: 1;
+        /* Laging ipakita sa mobile */
+    }
+
+    /* 6. Budget Limits */
+    .budget-limits-grid {
+        grid-template-columns: 1fr !important;
+        padding: 12px;
+    }
+
+    .limit-ratio {
+        font-size: 10px;
+    }
+
+    /* 7. Modal Tweaks */
+    .auth-gate-card {
+        padding: 30px 20px;
+    }
+
+    .auth-gate-title {
+        font-size: 16px;
+    }
+
+    .limit-input-label {
+        width: 100px;
+        font-size: 12px;
+    }
+
+    .limit-input-wrap {
+        max-width: 120px;
+    }
+}
