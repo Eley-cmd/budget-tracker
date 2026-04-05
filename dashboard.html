@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Ledger</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <!-- Firebase (must be in <head> so window.ledgerAuth is ready before body scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <!-- Chart.js -->
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>-->
+</head>
+
+<body class="dashboard-body">
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="navbar navbar-dash" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-mark">L</span>
+        <span class="logo-text">Ledger</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-auth" id="nav-auth">
+        <button class="btn-ghost" id="btn-login">Sign In</button>
+        <button class="btn-primary" id="btn-signup">Get Started</button>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="index.html" class="mobile-link">Home</a>
+      <a href="dashboard.html" class="mobile-link active">Dashboard</a>
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <hr class="mobile-divider" />
+      <!-- #mobile-auth-section is updated by auth.js renderNavAuth() -->
+      <div id="mobile-auth-section">
+        <button class="btn-ghost   w-full" id="mobile-login">Sign In</button>
+        <button class="btn-primary w-full" id="mobile-signup">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== AUTH GATE (shown when not signed in) ========== -->
+  <!--
+    #auth-gate is visible by default (display:flex in CSS).
+    auth.js hides it and shows #dash-content once the user is authenticated.
+  -->
+  <div id="auth-gate" class="auth-gate">
+    <div class="auth-gate-card">
+      <div class="auth-gate-logo">
+        <span class="logo-mark" style="width:48px;height:48px;font-size:24px;">L</span>
+        <span class="logo-text" style="font-size:24px;">Ledger</span>
+      </div>
+      <h1 class="auth-gate-title">Welcome to Ledger</h1>
+      <p class="auth-gate-desc">
+        Sign in to access your personalized budget dashboard and sync your data across devices.
+      </p>
+      <button class="google-btn gate-google-btn" id="gate-google-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+        </svg>
+        Sign in with Google
+      </button>
+      <a href="index.html" class="auth-gate-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to homepage
+      </a>
+    </div>
+  </div>
+
+  <!-- ========== DASHBOARD CONTENT (shown after sign-in) ========== -->
+  <div id="dash-content" style="display:none;">
+    <main class="dash-main">
+      <div class="dash-container">
+
+        <!-- Header -->
+        <div class="dash-header">
+          <div>
+            <h1 class="dash-title">Dashboard</h1>
+            <p class="dash-subtitle" id="dash-subtitle">Track your income, expenses, and savings.</p>
+          </div>
+          <button class="btn-primary" id="open-add-modal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Transaction
+          </button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+
+          <div class="summary-card income-card">
+            <div class="summary-card-top">
+              <div class="summary-label">Total Income</div>
+              <!-- icons_income.png: Income icon -->
+              <div class="summary-icon income-icon">
+                <img src="assets/images/icons_income.png" alt="Income" class="card-icon-img" />
+              </div>
+            </div>
+            <div class="summary-value" id="total-income">₱0.00</div>
+            <div class="summary-change" id="income-change">No income this month</div>
+          </div>
+
+          <div class="summary-card expense-card">
+            <div class="summary-card-top">
+              <div class="summary-label">Total Expenses</div>
+              <!-- icons_expense.png: Expense icon -->
+              <div class="summary-icon expense-icon">
+                <img src="assets/images/icons_expense.png" alt="Expenses" class="card-icon-img" />
+              </div>
+            </div>
+            <div class="summary-value" id="total-expenses">₱0.00</div>
+            <div class="summary-change" id="expense-change">No expenses this month</div>
+          </div>
+
+          <div class="summary-card savings-card">
+            <div class="summary-card-top">
+              <div class="summary-label">Net Savings</div>
+              <!-- icons_savings.png: Savings icon -->
+              <div class="summary-icon savings-icon">
+                <img src="assets/images/icons_savings.png" alt="Savings" class="card-icon-img" />
+              </div>
+            </div>
+            <div class="summary-value" id="total-savings">₱0.00</div>
+            <div class="summary-change" id="savings-change">Income minus expenses</div>
+          </div>
+
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+
+          <div class="chart-card chart-bar">
+            <div class="chart-card-header">
+              <h3>Monthly Overview</h3>
+              <select class="chart-filter" id="bar-filter">
+                <option value="6">Last 6 months</option>
+                <option value="12">Last 12 months</option>
+              </select>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card chart-donut">
+            <div class="chart-card-header">
+              <h3>Expense Breakdown</h3>
+            </div>
+            <div class="chart-wrap donut-wrap">
+              <canvas id="donutChart"></canvas>
+            </div>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+
+        </div>
+
+        <!-- ========== BUDGET LIMITS SECTION ========== -->
+        <div class="budget-limits-section">
+          <div class="budget-limits-header">
+            <div>
+              <h3>Daily Budget Limits</h3>
+              <p class="budget-limits-sub">Today's spending vs your daily cap per category</p>
+            </div>
+            <button class="btn-ghost btn-sm" id="open-limits-modal">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              Edit Limits
+            </button>
+          </div>
+          <div class="budget-limits-grid" id="budget-limits-grid">
+            <!-- populated by budget-limits.js -->
+            <div class="limits-empty">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                opacity="0.35">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p>No daily limits set yet.<br />Click <strong>Edit Limits</strong> to add spending caps per category.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="transactions-section">
+          <div class="transactions-header">
+            <h3>Transactions</h3>
+            <div class="tx-filters">
+              <select class="chart-filter" id="tx-type-filter">
+                <option value="all">All types</option>
+                <option value="income">Income only</option>
+                <option value="expense">Expenses only</option>
+              </select>
+              <select class="chart-filter" id="tx-cat-filter">
+                <option value="all">All categories</option>
+              </select>
+              <input type="month" class="chart-filter" id="tx-month-filter" title="Filter by month" />
+            </div>
+          </div>
+
+          <div class="tx-list" id="tx-list">
+            <div class="tx-empty" id="tx-empty">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                opacity="0.3">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+              <p>No transactions yet.<br />Click "Add Transaction" to get started.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div><!-- /#dash-content -->
+
+  <!-- ADD / EDIT MODAL -->
+  <div class="modal-overlay" id="tx-modal">
+    <div class="modal-card modal-tx">
+      <button class="modal-close" id="tx-modal-close">&times;</button>
+      <h2 class="modal-title" id="tx-modal-title">Add Transaction</h2>
+
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <div class="type-toggle">
+          <button class="type-btn active" data-type="income" id="type-income">Income</button>
+          <button class="type-btn" data-type="expense" id="type-expense">Expense</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="tx-description">Title</label>
+        <input type="text" id="tx-description" class="form-input" placeholder="e.g. Bumili ng..." />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="tx-amount">Amount (₱)</label>
+          <input type="number" id="tx-amount" class="form-input" placeholder="0.00" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tx-date">Date</label>
+          <input type="date" id="tx-date" class="form-input" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="tx-category">Category</label>
+        <select id="tx-category" class="form-input"></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="tx-notes">Notes (optional)</label>
+        <textarea id="tx-notes" class="form-input form-textarea" placeholder="Any additional details..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-ghost" id="tx-cancel">Cancel</button>
+        <button class="btn-primary" id="tx-save">Save Transaction</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DELETE CONFIRM MODAL ========== -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal-card modal-sm">
+      <h2 class="modal-title">Delete Transaction?</h2>
+      <p class="modal-desc">This action cannot be undone. The transaction will be permanently removed.</p>
+      <div class="form-actions">
+        <button class="btn-ghost" id="delete-cancel">Cancel</button>
+        <button class="btn-danger" id="delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-logo">
+        <span class="logo-mark">L</span>
+        <span class="logo-text">Ledger</span>
+      </div>
+      <h2 class="modal-title">Sign in to Ledger</h2>
+      <p class="modal-desc">Your budget data is private and linked to your Google account.</p>
+      <button class="google-btn" id="google-signin-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+        </svg>
+        Continue with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- BUDGET LIMITS MODAL -->
+  <div class="modal-overlay" id="limits-modal">
+    <div class="modal-card modal-limits">
+      <button class="modal-close" id="limits-cancel-btn">&times;</button>
+      <h2 class="modal-title">Daily Budget Limits</h2>
+      <p class="modal-desc">Set a daily spending cap per category. Leave blank for no limit. You'll be notified when you
+        hit or approach the limit.</p>
+      <div class="limits-modal-body" id="limits-modal-body">
+        <!-- populated by budget-limits.js -->
+      </div>
+      <div class="form-actions" style="margin-top:24px;">
+        <button class="btn-ghost" id="limits-cancel-btn-2" onclick="window.closeModal('limits-modal')">Cancel</button>
+        <button class="btn-primary" id="limits-save-btn">Save Limits</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!--
+    Script load order (critical):
+    firebase-config.js → already in <head>
+    auth.js     → sets up onAuthStateChanged, calls loadTransactions() on sign-in
+    storage.js  → reads window.ledgerCurrentUser + window.ledgerDb
+    charts.js   → exposes window.updateCharts
+    dashboard.js→ exposes window.loadTransactions, binds UI events
+    main.js     → navbar scroll + mobile menu only
+  -->
+  <script src="js/auth.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/budget-limits.js"></script>
+  <script src="js/chart.min.js"></script>
+
+</body>
+
+</html>
