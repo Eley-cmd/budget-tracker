@@ -1031,54 +1031,74 @@
     }
 }
 
-@media (max-width: 330px) {
+/* ─── CHART & DASHBOARD RESPONSIVE FIX (320px - 330px) ─── */
+@media (max-width: 350px) {
 
-    /* 1. Force the container to be narrow */
+    /* Pilitin ang charts na magkasya */
     .charts-row {
+        grid-template-columns: 1fr !important;
+        /* Isang column lang */
         display: flex !important;
         flex-direction: column !important;
-        width: 100% !important;
         gap: 15px !important;
-        padding: 0 !important;
     }
 
     .chart-card {
-        width: 100% !important;
         padding: 12px !important;
-        /* Liitan ang padding sa loob ng card */
-        box-sizing: border-box !important;
+        width: 100% !important;
+        overflow: hidden !important;
+        /* Iwas scrollbar sa loob ng card */
     }
 
-    /* 2. Resize the actual Canvas wrapper */
-    .chart-wrap,
+    /* I-resize ang Canvas Containers */
+    .chart-wrap {
+        height: 160px !important;
+        /* Liitan ang height para hindi kainin ang buong screen */
+    }
+
     .donut-wrap {
-        width: 100% !important;
-        height: 180px !important;
-        /* Fixed height para hindi mag-overflow */
-        position: relative !important;
+        height: 140px !important;
     }
 
-    canvas {
-        width: 100% !important;
-        /* Pilitin ang canvas na mag-shrink */
-        height: 100% !important;
-    }
-
-    /* 3. Hide non-essential small details */
-    .chart-card-header h3 {
-        font-size: 13px;
-    }
-
-    .chart-filter {
-        padding: 4px 6px;
-        font-size: 11px;
-    }
-
-    /* Donut Legend - gawing 2 columns para hindi mahaba pababa */
+    /* Donut Legend Adjustment */
     .donut-legend {
         display: grid !important;
-        grid-template-columns: 1fr 1fr;
-        gap: 5px;
-        font-size: 10px;
+        grid-template-columns: 1fr 1fr !important;
+        /* Gawing 2 columns ang legend */
+        gap: 4px !important;
+        margin-top: 10px !important;
+    }
+
+    .legend-item {
+        font-size: 10px !important;
+        /* Liitan ang text */
+        gap: 4px !important;
+    }
+
+    .legend-dot {
+        width: 6px !important;
+        height: 6px !important;
+    }
+
+    .legend-value {
+        font-size: 10px !important;
+    }
+
+    /* Summary Values Fix */
+    .summary-value {
+        font-size: 18px !important;
+        /* Para hindi mag-overlap ang Peso sign */
+    }
+
+    /* Transaction Item Fix */
+    .tx-desc {
+        font-size: 13px !important;
+        max-width: 120px;
+        /* Force ellipsis para hindi itulak ang amount */
+    }
+
+    .tx-amount {
+        font-size: 12px !important;
+        min-width: 70px !important;
     }
 }
